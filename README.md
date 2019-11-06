@@ -41,6 +41,8 @@ curl http://localhost:3000/test
 1.  [安装heartbeat](https://www.elastic.co/guide/en/beats/heartbeat/current/heartbeat-installation.html)
 2.  配置heartbeat,配置文件参考./heartbeat/heartbeat.yml
 3.  [导入heartbeat的dashboard](https://github.com/elastic/uptime-contrib)
+4.  [启动heartbeat](https://www.elastic.co/guide/en/beats/heartbeat/current/heartbeat-starting.html)
+启动前先确认sample应用程序在线
 
 ##  报警服务
 
@@ -48,6 +50,10 @@ curl http://localhost:3000/test
 [getstart](https://elastalert.readthedocs.io/en/latest/running_elastalert.html)
 
 ### 启动报警服务
+修改配置文件./alert/example_frequency.yaml
+1.  48行 改为可用的smtp服务器地址
+2.  改为可用的email地址
+
 build报警服务image(由于我本机的python是３.7版本，跟这个工具不兼容，使用docker创建python ３.6.4环境)
 ```SHELL
 cd alert
@@ -74,3 +80,5 @@ docker run -it --rm \
   -v $(pwd)/alert:/usr/src \
   elastalert python -m elastalert.elastalert --verbose --config config.yaml --rule example_frequency.yaml 
 ```
+
+测试报警功能
