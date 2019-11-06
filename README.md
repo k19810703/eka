@@ -42,3 +42,35 @@ curl http://localhost:3000/test
 2.  配置heartbeat,配置文件参考./heartbeat/heartbeat.yml
 3.  [导入heartbeat的dashboard](https://github.com/elastic/uptime-contrib)
 
+##  报警服务
+
+### 参考
+[getstart](https://elastalert.readthedocs.io/en/latest/running_elastalert.html)
+
+### 启动报警服务
+build报警服务image(由于我本机的python是３.7版本，跟这个工具不兼容，使用docker创建python ３.6.4环境)
+```SHELL
+cd alert
+docker build -t elastalert .
+```
+
+配置es的index
+```SHELL
+docker run -it --rm \
+  --network monitor-apm-alert_default \
+  --link elasticsearch:elasticsearch \
+  --link kibana:kibana\
+  --link apmserver:apmserver \
+  elastalert-create-index
+```
+
+启动报警服务(根目录下执行)
+```SHELL
+docker run -it --rm \
+  --network monitor-apm-alert_default \
+  --link elasticsearch:elasticsearch \
+  --link kibana:kibana\
+  --link apmserver:apmserver \
+  -v $(pwd)/alert:/usr/src \
+  elastalert python -m elastalert.elastalert --verbose --config config.yaml --rule example_frequency.yaml 
+```
