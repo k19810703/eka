@@ -1,7 +1,7 @@
 # 监控报警服务
 
 ##  说明
-使用elastic search，kibana来构建集中日志管理，apm-server实现应用程序监控，使用elastalert报警
+使用elastic search，kibana来构建集中日志管理，apm-server实现应用程序监控，使用elastalert报警。生产环境建议使用cloud vendor的es和kibana服务
 
 ##  前提
 1.  Docker环境
@@ -52,7 +52,7 @@ curl http://localhost:3000/test
 ### 启动报警服务
 修改配置文件./alert/example_frequency.yaml
 1.  48行 改为可用的smtp服务器地址
-2.  改为可用的email地址
+2.  57行 改为可用的email地址
 
 build报警服务image(由于我本机的python是３.7版本，跟这个工具不兼容，使用docker创建python ３.6.4环境)
 ```SHELL
