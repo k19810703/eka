@@ -81,4 +81,7 @@ docker run -it --rm \
   elastalert python -m elastalert.elastalert --verbose --config config.yaml --rule example_frequency.yaml 
 ```
 
-测试报警功能
+测试报警功能， 停掉sample应用程序，过一会你会收到邮件警报，email以外也能配置slack报警
+
+### 答疑解惑
+wuhd@cn.ibm.com
