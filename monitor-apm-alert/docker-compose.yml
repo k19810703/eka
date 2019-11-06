@@ -1,0 +1,33 @@
+version: '2'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.2
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - ./elasticdata:/usr/share/elasticsearch/data
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.4.2
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./kibanadata:/usr/share/kibana/data
+    depends_on:
+       - elasticsearch
+  apmserver:
+    image: docker.elastic.co/apm/apm-server:7.4.2
+    container_name: apmserver
+    user: apm-server
+    ports:
+      - "8200:8200"
+    volumes:
+      - ./apm-server.docker.yml:/usr/share/apm-server/apm-server.yml:ro
+    depends_on:
+       - elasticsearch
+       - kibana
+    command: "--strict.perms=false -e -E output.elasticsearch.hosts=[\"elasticsearch:9200\"]"
