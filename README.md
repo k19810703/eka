@@ -38,5 +38,7 @@ curl http://localhost:3000/test
 3.  自行探索或参考官网文档
 
 ## 监控服务
-
+1.  [安装heartbeat](https://www.elastic.co/guide/en/beats/heartbeat/current/heartbeat-installation.html)
+2.  配置heartbeat,配置文件参考./heartbeat/heartbeat.yml
+3.  [导入heartbeat的dashboard](https://github.com/elastic/uptime-contrib)
 
