@@ -5,11 +5,14 @@
 
 ##  前提
 1.  Docker环境
-2.  docker-compose
-3.  node.js环境(sample程序)
+2.  docker-compose环境
+3.  端口3000 3001 5601 8200 9200 9300未被占用
+
 ##  启动服务
+这里使用docker-compose启动ElasticSearch,kibana,apm-server服务
 ```Shell
 git clone https://github.com/k19810703/eka.git
+docker network create ekasample
 cd ./eka/monitor-apm-alert
 docker-compose up -d
 ```
@@ -17,12 +20,14 @@ docker-compose up -d
 ## 启动sample应用
 回到本工程根目录
 ```Shell
-npm install
-node ./sampleapp/app.js
+cd ./sampleapp
+docker-compose up --build -d
+
 ```
-发一个请求请求
+发送http请求
 ```Shell
-curl http://localhost:3000/test
+curl http://localhost:3000/healthcheck
+curl http://localhost:3001/apmtest
 ```
 
 ## log服务
@@ -38,6 +43,7 @@ curl http://localhost:3000/test
 3.  自行探索或参考官网文档
 
 ## 监控服务
+监控服务有很多中类型的监控，主要是拉取es的数据进行分析。这里的sample是监控sample应用程序是否有响应(心跳检查)
 1.  [安装heartbeat](https://www.elastic.co/guide/en/beats/heartbeat/current/heartbeat-installation.html)
 2.  配置heartbeat,配置文件参考./heartbeat/heartbeat.yml
 3.  [导入heartbeat的dashboard](https://github.com/elastic/uptime-contrib)
@@ -47,7 +53,7 @@ curl http://localhost:3000/test
 ##  报警服务
 
 ### 参考
-[getstart](https://elastalert.readthedocs.io/en/latest/running_elastalert.html)
+[elasalert](https://elastalert.readthedocs.io/en/latest/running_elastalert.html)
 
 ### 启动报警服务
 修改配置文件./alert/example_frequency.yaml

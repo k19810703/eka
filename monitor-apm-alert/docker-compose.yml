@@ -10,6 +10,8 @@ services:
       - discovery.type=single-node
     volumes:
       - ./elasticdata:/usr/share/elasticsearch/data
+    networks:
+      - ekasample
   kibana:
     image: docker.elastic.co/kibana/kibana:7.4.2
     container_name: kibana
@@ -19,6 +21,8 @@ services:
       - ./kibanadata:/usr/share/kibana/data
     depends_on:
        - elasticsearch
+    networks:
+      - ekasample
   apmserver:
     image: docker.elastic.co/apm/apm-server:7.4.2
     container_name: apmserver
@@ -31,3 +35,8 @@ services:
        - elasticsearch
        - kibana
     command: "--strict.perms=false -e -E output.elasticsearch.hosts=[\"elasticsearch:9200\"]"
+    networks:
+      - ekasample
+networks:
+    ekasample:
+      external: true

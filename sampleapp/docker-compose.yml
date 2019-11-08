@@ -1,0 +1,27 @@
+version: '2'
+services:
+  service1:
+    image: sampleapp
+    build: .
+    environment:
+      - appname=app-service1
+      - backendurl=http://service2:3000/backend
+    container_name: sample-service1
+    ports: 
+      - 3000:3000
+    networks:
+      - ekasample
+  service2:
+    image: sampleapp
+    environment:
+      - PORT:3001
+      - appname=app-service2
+      - backendurl=http://service1:3001/backend
+    container_name: sample-service2
+    ports: 
+      - 3001:3000
+    networks:
+      - ekasample
+networks:
+    ekasample:
+      external: true
