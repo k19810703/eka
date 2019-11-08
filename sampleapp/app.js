@@ -35,6 +35,11 @@ app.use('/backend', (req, res, next) => {
   res.json({response: 'from backend'});
 });
 
+app.use('/errortest', (req, res, next) => {
+  res.status(500).send();
+  throw new Error('it is an error');
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   log.info(`server starting on http://localhost:${port}`);

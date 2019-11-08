@@ -27,7 +27,8 @@ docker-compose up --build -d
 发送http请求
 ```Shell
 curl http://localhost:3000/healthcheck
-curl http://localhost:3001/apmtest
+curl http://localhost:3000/apmtest
+curl http://localhost:3000/errortest
 ```
 
 ## log服务
