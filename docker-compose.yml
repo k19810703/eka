@@ -8,8 +8,6 @@ services:
       - "9300:9300"
     environment:
       - discovery.type=single-node
-    volumes:
-      - ./monitor-apm-alert/elasticdata:/usr/share/elasticsearch/data
     networks:
       - ekasample
   kibana:
@@ -17,73 +15,71 @@ services:
     container_name: kibana
     ports:
       - "5601:5601"
-    volumes:
-      - ./monitor-apm-alert/kibanadata:/usr/share/kibana/data
     depends_on:
        - elasticsearch
     networks:
       - ekasample
-  apmserver:
-    image: docker.elastic.co/apm/apm-server:7.4.2
-    container_name: apmserver
-    user: apm-server
-    ports:
-      - "8200:8200"
-    volumes:
-      - ./monitor-apm-alert/apm-server.docker.yml:/usr/share/apm-server/apm-server.yml:ro
-    depends_on:
-       - elasticsearch
-       - kibana
-    command: "--strict.perms=false -e -E output.elasticsearch.hosts=[\"elasticsearch:9200\"]"
-    networks:
-      - ekasample
-  service1:
-    image: sampleapp
-    build: ./sampleapp
-    environment:
-      - appname=app-service1
-      - backendurl=http://service2:3000/backend
-    container_name: sample-service1
-    ports: 
-      - 3000:3000
-    networks:
-      - ekasample
-  service2:
-    image: sampleapp
-    environment:
-      - PORT:3001
-      - appname=app-service2
-      - backendurl=http://service1:3001/backend
-    container_name: sample-service2
-    ports: 
-      - 3001:3000
-    networks:
-      - ekasample
-  mysql:
-    image: mysql:5.7
-    container_name: sampledb
-    environment:
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
-    ports: 
-      - 3306:3306
-    networks:
-      - ekasample
-  initmetricdashboard:
-    image: docker.elastic.co/beats/metricbeat:7.4.2
-    container_name: initmetricdashboard
-    user: root
-    restart: on-failure
-    volumes:
-      - ./monitor-apm-alert/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
-      - /proc:/hostfs/proc:ro
-      - /:/hostfs:ro
-    command: "metricbeat setup --dashboards"
-    depends_on:
-      - kibana
-    networks:
-      - ekasample
+#   apmserver:
+#     image: docker.elastic.co/apm/apm-server:7.4.2
+#     container_name: apmserver
+#     user: apm-server
+#     ports:
+#       - "8200:8200"
+#     volumes:
+#       - ./monitor-apm-alert/apm-server.docker.yml:/usr/share/apm-server/apm-server.yml:ro
+#     depends_on:
+#        - elasticsearch
+#        - kibana
+#     command: "--strict.perms=false -e -E output.elasticsearch.hosts=[\"elasticsearch:9200\"]"
+#     networks:
+#       - ekasample
+#   service1:
+#     image: sampleapp
+#     build: ./sampleapp
+#     environment:
+#       - appname=app-service1
+#       - backendurl=http://service2:3000/backend
+#     container_name: sample-service1
+#     ports: 
+#       - 3000:3000
+#     networks:
+#       - ekasample
+#   service2:
+#     image: sampleapp
+#     environment:
+#       - PORT:3001
+#       - appname=app-service2
+#       - backendurl=http://service1:3001/backend
+#     container_name: sample-service2
+#     ports: 
+#       - 3001:3000
+#     networks:
+#       - ekasample
+#   mysql:
+#     image: mysql:5.7
+#     container_name: sampledb
+#     environment:
+#       - MYSQL_RANDOM_ROOT_PASSWORD=yes
+#     ports: 
+#       - 3306:3306
+#     networks:
+#       - ekasample
+#   initmetricdashboard:
+#     image: docker.elastic.co/beats/metricbeat:7.4.2
+#     container_name: initmetricdashboard
+#     user: root
+#     restart: on-failure
+#     volumes:
+#       - ./monitor-apm-alert/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:ro
+#       - /var/run/docker.sock:/var/run/docker.sock:ro
+#       - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+#       - /proc:/hostfs/proc:ro
+#       - /:/hostfs:ro
+#     command: "metricbeat setup --dashboards"
+#     depends_on:
+#       - kibana
+#     networks:
+#       - ekasample
 networks:
     ekasample:
       external: true
