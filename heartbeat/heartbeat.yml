@@ -24,7 +24,7 @@ heartbeat.monitors:
 - type: http
 
   # List or urls to query
-  urls: ["http://localhost:3000/test"]
+  urls: ["http://localhost:3000/healthcheck", "http://localhost:3001/healthcheck"]
 
   # Configure task schedule
   schedule: '@every 5s'

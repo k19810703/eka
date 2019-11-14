@@ -1,4 +1,4 @@
-metricbeat.config:
+metricbeat.config1:
   modules:
     path: ${path.config}/modules.d/*.yml
     # Reload module configs as they change:
@@ -23,3 +23,6 @@ output.elasticsearch:
   hosts: '${ELASTICSEARCH_HOSTS:elasticsearch:9200}'
   username: '${ELASTICSEARCH_USERNAME:}'
   password: '${ELASTICSEARCH_PASSWORD:}'
+
+setup.kibana:
+  host: "kibana:5601"
