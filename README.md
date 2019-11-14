@@ -117,7 +117,7 @@ docker build -t elastalert .
 配置es的index
 ```SHELL
 docker run -it --rm \
-  --network monitor-apm-alert_default \
+  --network ekasample \
   --link elasticsearch:elasticsearch \
   --link kibana:kibana\
   --link apmserver:apmserver \
@@ -127,7 +127,7 @@ docker run -it --rm \
 启动报警服务(根目录下执行)
 ```SHELL
 docker run -it --rm \
-  --network monitor-apm-alert_default \
+  --network ekasample \
   --link elasticsearch:elasticsearch \
   --link kibana:kibana\
   --link apmserver:apmserver \
