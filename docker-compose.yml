@@ -19,31 +19,37 @@ services:
        - elasticsearch
     networks:
       - ekasample
-#   apmserver:
-#     image: docker.elastic.co/apm/apm-server:7.4.2
-#     container_name: apmserver
-#     user: apm-server
-#     ports:
-#       - "8200:8200"
-#     volumes:
-#       - ./monitor-apm-alert/apm-server.docker.yml:/usr/share/apm-server/apm-server.yml:ro
-#     depends_on:
-#        - elasticsearch
-#        - kibana
-#     command: "--strict.perms=false -e -E output.elasticsearch.hosts=[\"elasticsearch:9200\"]"
-#     networks:
-#       - ekasample
-#   service1:
-#     image: sampleapp
-#     build: ./sampleapp
-#     environment:
-#       - appname=app-service1
-#       - backendurl=http://service2:3000/backend
-#     container_name: sample-service1
-#     ports: 
-#       - 3000:3000
-#     networks:
-#       - ekasample
+  apmserver:
+    image: docker.elastic.co/apm/apm-server:7.4.2
+    container_name: apmserver
+    user: apm-server
+    ports:
+      - "8200:8200"
+    volumes:
+      - ./monitor-apm-alert/apm-server.docker.yml:/usr/share/apm-server/apm-server.yml:ro
+    depends_on:
+       - elasticsearch
+       - kibana
+    command: "--strict.perms=false -e -E output.elasticsearch.hosts=[\"elasticsearch:9200\"]"
+    networks:
+      - ekasample
+  initjob:
+    image: initjob
+    build: ./init
+    container_name: initjob
+    networks:
+      - ekasample
+  # service1:
+  #   image: sampleapp
+  #   build: ./sampleapp
+  #   environment:
+  #     - appname=app-service1
+  #     - backendurl=http://service2:3000/backend
+  #   container_name: sample-service1
+  #   ports: 
+  #     - 3000:3000
+  #   networks:
+  #     - ekasample
 #   service2:
 #     image: sampleapp
 #     environment:
