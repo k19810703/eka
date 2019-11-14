@@ -4,7 +4,7 @@ const Elasticsearch = require('winston-elasticsearch');
 
 const client = new elasticsearch.Client({
   host: 'elasticsearch:9200',
-  log: 'trace',
+  // log: 'trace',
   apiVersion: '7.4',
 });
 

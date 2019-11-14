@@ -14,8 +14,8 @@
 ```Shell
 git clone https://github.com/k19810703/eka.git
 docker network create ekasample
-cd ./eka/monitor-apm-alert
-docker-compose up -d
+cd ./eka
+docker-compose up --build -d
 ```
 kibana启动时间较长，可以通过访问http://localhost:5601 来确认是否启动成功
 
@@ -63,7 +63,7 @@ docker run --network ekasample -p 3306:3306 --name mysql --env MYSQL_RANDOM_ROOT
 2.  稍等片刻等待mysql完全启动成功后设置并启动metricbeat
 ```SHELL
 # 获取mysql的密码，设置到环境变量mysqlpass
-export mysqlpass=$(docker logs mysql 2>1 | grep PASSWORD | awk '{print $4}')
+export mysqlpass=$(docker logs sampledb 2>1 | grep PASSWORD | awk '{print $4}')
 # 获取mysql的密码
 echo ＄mysqlpass
 # 设置dashboard
@@ -136,6 +136,11 @@ docker run -it --rm \
 ```
 
 测试报警功能， 停掉sample应用程序，过一会你会收到邮件警报，email以外也能配置slack报警
+
+##  清理
+```SHELL
+docker-compose rm -s -f -v
+```
 
 ### 答疑解惑
 wuhd@cn.ibm.com
