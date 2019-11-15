@@ -6,77 +6,25 @@
 ##  前提
 1.  Docker环境
 2.  docker-compose环境
-3.  端口3000 3001 5601 8200 9200 9300未被占用
+3.  端口3000 3001 3306 5601 8200 9200 9300未被占用
 4.  安装好curl
 
 ##  启动服务
-这里使用docker-compose启动ElasticSearch,kibana,apm-server服务
+
+### 启动方法
+打开终端后以此输入以下命令
 ```Shell
 git clone https://github.com/k19810703/eka.git
 docker network create ekasample
 cd ./eka
+# 打包启动
 docker-compose up --build -d
-```
-kibana启动时间较长，可以通过访问http://localhost:5601 来确认是否启动成功
-
-## 启动sample应用
-回到本工程根目录
-```Shell
-cd ./sampleapp
-docker-compose up --build -d
-```
-发送http请求
-```Shell
-curl http://localhost:3000/healthcheck
-curl http://localhost:3000/apmtest
-curl http://localhost:3000/errortest
-```
-
-## log服务
-1.  打开kibana http://localhost:5601
-2.  左边栏=>Management=>Index Patterns=>Create index pattern=>Index pattern: app-service1-* =>Next step=>Time Filter field name: @timestamp=>Create index pattern,同理创建app-service2-*
-3.  左边栏=>Discover=>左边下拉框选择app-service1-* 或者 app-service2-* 来查看log
-4.  就可以看到samleapp的log了，本例用的node.js的express框架，使用winston作为log组件，其他语言也有类似的log模块直接输出到elastic search
-5.  如果log输出到文件，可以参考elastic的filebeat组件
-
-##  apm服务
-1.  打开kibana http://localhost:5601
-2.  左边栏=>APM
-3.  自行探索或参考官网文档
-
-## 监控服务
-监控服务有很多中类型的监控，主要是拉取es的数据进行分析。这里的sample是监控sample应用程序是否有响应(心跳检查)
-1.  [安装heartbeat](https://www.elastic.co/guide/en/beats/heartbeat/current/heartbeat-installation.html)
-2.  配置heartbeat,配置文件参考./heartbeat/heartbeat.yml
-3.  [导入heartbeat的dashboard](https://github.com/elastic/uptime-contrib)，导入所需json文件可以在./heartbeat/下找到
-4.  [启动heartbeat](https://www.elastic.co/guide/en/beats/heartbeat/current/heartbeat-starting.html)
-启动前先确认sample应用程序在线
-5.  打开kibana http://localhost:5601
-6.  左边栏=>Discover=>左边下拉框选择heartbeat-*
-
-##  数据库监控
-1.  启动sample数据库
-```SHELL
-docker run --network ekasample -p 3306:3306 --name mysql --env MYSQL_RANDOM_ROOT_PASSWORD=yes -d mysql:5.7
-```
-
-2.  稍等片刻等待mysql完全启动成功后设置并启动metricbeat
-```SHELL
+# 查看初始化进程log，以下命令退出后说明启动成功
+docker logs -f initjob
 # 获取mysql的密码，设置到环境变量mysqlpass
 export mysqlpass=$(docker logs sampledb 2>1 | grep PASSWORD | awk '{print $4}')
 # 获取mysql的密码
-echo ＄mysqlpass
-# 设置dashboard
-docker run -e MYSQL_PASSWORD=${mysqlpass} \
-  --network ekasample \
-  --rm \
-  --user=root \
-  --volume="$(pwd)/monitor-apm-alert/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:ro" \
-  --volume="/var/run/docker.sock:/var/run/docker.sock:ro" \
-  --volume="/sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro" \
-  --volume="/proc:/hostfs/proc:ro" \
-  --volume="/:/hostfs:ro" \
-  docker.elastic.co/beats/metricbeat:7.4.2 metricbeat setup --dashboards
+echo $mysqlpass
 # 启动metricbeat
 docker run -d -e MYSQL_PASSWORD=${mysqlpass} \
   --network ekasample \
@@ -91,11 +39,38 @@ docker run -d -e MYSQL_PASSWORD=${mysqlpass} \
   -E output.elasticsearch.hosts=elasticsearch:9200
 ```
 
-3.  通过数据库管理工具连接上mysql后做一些sql操作
-4.  打开kibana http://localhost:5601
-5.  左边栏=>Dashboard
-6.  搜索mysql
-7.  点击[Metricbeat MySQL] Overview ECS
+服务较多，整体启动需要花个几分钟
+
+### 启动内容说明
+1.  启动了elasticsearch，kibana，apm-server服务
+2.  启动了sample-service1,sample-service2 2个api服务
+3.  启动了mysql服务
+4.  启动了heartbeat服务监控sample-service1,sample-service2是否在线
+5.  在elasticsearch和kibana上做了heartbeat的初始化
+6.  在elasticsearch和kibana上做了metricbeat的初始化
+
+## log服务
+1.  打开kibana http://localhost:5601
+2.  左边栏=>Discover=>左边下拉框选择app-service1-* 或者 app-service2-* 来查看log
+4.  就可以看到samleapp的log了，本例用的node.js的express框架，使用winston作为log组件，其他语言也有类似的log模块直接输出到elastic search
+5.  如果log输出到文件，可以参考elastic的filebeat组件
+
+##  apm服务
+1.  打开kibana http://localhost:5601
+2.  左边栏=>APM
+3.  自行探索或参考官网文档
+
+## 监控服务
+1.  打开kibana http://localhost:5601
+2.  左边栏=>Discover=>左边下拉框选择heartbeat-*
+3.  左边栏=>Dashboard=>搜索heartbeat，并打开出现的那条记录
+
+##  数据库监控
+1.  通过数据库管理工具连接上mysql后做一些sql操作以生成一些监控数据
+2.  打开kibana http://localhost:5601
+3.  左边栏=>Dashboard
+4.  搜索mysql
+5.  点击[Metricbeat MySQL] Overview ECS
 
 
 ##  报警服务

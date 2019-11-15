@@ -1,4 +1,5 @@
-FROM alpine
-ADD init.sh /usr/src/init.sh
-RUN apk add curl jq
-CMD ["sh", "/usr/src/init.sh"]
+FROM k19810703/whdcurl
+ADD . /usr/src/
+WORKDIR /usr/src
+VOLUME [ "/usr/src" ]
+CMD ["bash", "init.sh"]

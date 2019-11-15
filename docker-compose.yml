@@ -39,53 +39,74 @@ services:
     container_name: initjob
     networks:
       - ekasample
-  # service1:
-  #   image: sampleapp
-  #   build: ./sampleapp
-  #   environment:
-  #     - appname=app-service1
-  #     - backendurl=http://service2:3000/backend
-  #   container_name: sample-service1
-  #   ports: 
-  #     - 3000:3000
-  #   networks:
-  #     - ekasample
-#   service2:
-#     image: sampleapp
-#     environment:
-#       - PORT:3001
-#       - appname=app-service2
-#       - backendurl=http://service1:3001/backend
-#     container_name: sample-service2
-#     ports: 
-#       - 3001:3000
-#     networks:
-#       - ekasample
-#   mysql:
-#     image: mysql:5.7
-#     container_name: sampledb
-#     environment:
-#       - MYSQL_RANDOM_ROOT_PASSWORD=yes
-#     ports: 
-#       - 3306:3306
-#     networks:
-#       - ekasample
-#   initmetricdashboard:
-#     image: docker.elastic.co/beats/metricbeat:7.4.2
-#     container_name: initmetricdashboard
-#     user: root
-#     restart: on-failure
-#     volumes:
-#       - ./monitor-apm-alert/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:ro
-#       - /var/run/docker.sock:/var/run/docker.sock:ro
-#       - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
-#       - /proc:/hostfs/proc:ro
-#       - /:/hostfs:ro
-#     command: "metricbeat setup --dashboards"
-#     depends_on:
-#       - kibana
-#     networks:
-#       - ekasample
+  service1:
+    image: sampleapp
+    build: ./sampleapp
+    environment:
+      - appname=app-service1
+      - backendurl=http://service2:3000/backend
+    container_name: sample-service1
+    ports: 
+      - 3000:3000
+    networks:
+      - ekasample
+  service2:
+    image: sampleapp
+    environment:
+      - PORT:3001
+      - appname=app-service2
+      - backendurl=http://service1:3001/backend
+    container_name: sample-service2
+    ports: 
+      - 3001:3000
+    networks:
+      - ekasample
+  mysql:
+    image: mysql:5.7
+    container_name: sampledb
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    ports: 
+      - 3306:3306
+    networks:
+      - ekasample
+  heartbeat:
+    image: docker.elastic.co/beats/heartbeat:7.4.2
+    container_name: heartbeat
+    user: heartbeat
+    volumes:
+        - ./heartbeat/heartbeat.docker.yml:/usr/share/heartbeat/heartbeat.yml:ro
+    depends_on:
+      - kibana
+      - elasticsearch
+    networks:
+      - ekasample
+  setupheartbeat:
+    image: docker.elastic.co/beats/heartbeat:7.4.2
+    container_name: setupheartbeat
+    restart: on-failure
+    command: "setup -E setup.kibana.host=kibana:5601 -E output.elasticsearch.hosts=elasticsearch:9200"
+    depends_on:
+      - kibana
+      - elasticsearch
+    networks:
+      - ekasample
+  setupmetricbeat:
+    image: docker.elastic.co/beats/metricbeat:7.4.2
+    container_name: setupmetricbeat
+    user: root
+    restart: on-failure
+    volumes:
+      - ./monitor-apm-alert/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /proc:/hostfs/proc:ro
+      - /:/hostfs:ro
+    command: "metricbeat setup --dashboards"
+    depends_on:
+      - kibana
+    networks:
+      - ekasample
 networks:
     ekasample:
       external: true
