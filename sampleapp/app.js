@@ -1,6 +1,6 @@
 require('elastic-apm-node').start({
   serviceName: process.env.appname,
-  serverUrl: 'http://apmserver:8200',
+  serverUrl: process.env.apmhost,
 });
 
 const axios = require('axios');

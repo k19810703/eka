@@ -3,8 +3,8 @@ const winston = require('winston');
 const Elasticsearch = require('winston-elasticsearch');
 
 const client = new elasticsearch.Client({
-  host: 'elasticsearch:9200',
-  // log: 'trace',
+  host: process.env.eshost,
+  log: 'trace',
   apiVersion: '7.4',
 });
 

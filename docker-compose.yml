@@ -44,6 +44,8 @@ services:
     build: ./sampleapp
     environment:
       - appname=app-service1
+      - eshost=elasticsearch:9200
+      - apmhost=http://apmserver:8200
       - backendurl=http://service2:3000/backend
     container_name: sample-service1
     ports: 
@@ -55,6 +57,8 @@ services:
     environment:
       - PORT:3001
       - appname=app-service2
+      - eshost=elasticsearch:9200
+      - apmhost=http://apmserver:8200
       - backendurl=http://service1:3001/backend
     container_name: sample-service2
     ports: 
@@ -65,7 +69,9 @@ services:
     image: mysql:5.7
     container_name: sampledb
     environment:
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      # - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_ROOT_PASSWORD=example
+    command: --default-authentication-plugin=mysql_native_password
     ports: 
       - 3306:3306
     networks:
@@ -79,6 +85,22 @@ services:
     depends_on:
       - kibana
       - elasticsearch
+    networks:
+      - ekasample
+  metricbeat:
+    image: docker.elastic.co/beats/metricbeat:7.4.2
+    container_name: metricbeat
+    user: root
+    environment:
+      - MYSQL_PASSWORD=example
+    volumes:
+      - ./monitor-apm-alert/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /proc:/hostfs/proc:ro
+      - /:/hostfs:ro
+    depends_on:
+      - kibana
     networks:
       - ekasample
   setupheartbeat:

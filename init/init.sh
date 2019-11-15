@@ -57,6 +57,13 @@ waitKibanaReady kibana:5601/api/status
 waitReady elasticsearch:9200/_cat/health
 waitReady apmserver:8200
 
+curl -X POST "kibana:5601/api/saved_objects/_import" -H "kbn-xsrf: true" --form file=@export.ndjson
+waitReady service1:3000/healthcheck
+waitReady service2:3000/healthcheck
+curl http://service1:3000/healthcheck
+curl http://service1:3000/apmtest
+curl http://service1:3000/errortest
+
 curl -X POST \
   http://kibana:5601/api/saved_objects/index-pattern \
   -H 'Content-Type: application/json' \
@@ -67,9 +74,3 @@ curl -X POST \
   -H 'Content-Type: application/json' \
   -H 'kbn-xsrf: true' \
   -d '{"attributes": {"title": "app-service2-*","timeFieldName": "@timestamp","fields": "[]"}}'
-curl -X POST "kibana:5601/api/saved_objects/_import" -H "kbn-xsrf: true" --form file=@export.ndjson
-waitReady service1:3000/healthcheck
-waitReady service2:3000/healthcheck
-curl http://service1:3000/healthcheck
-curl http://service1:3000/apmtest
-curl http://service1:3000/errortest

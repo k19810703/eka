@@ -13,28 +13,13 @@
 ### 启动方法
 ```SHELL
 git clone https://github.com/k19810703/eka.git
+# 创建网络 仅需一次
 docker network create ekasample
 cd ./eka
 # 打包启动
 docker-compose up --build -d
 # 查看初始化进程log，以下命令退出后说明启动成功
 docker logs -f initjob
-# 获取mysql的密码，设置到环境变量mysqlpass
-export mysqlpass=$(docker logs sampledb 2>1 | grep PASSWORD | awk '{print $4}')
-# 获取mysql的密码
-echo $mysqlpass
-# 启动metricbeat
-docker run -d -e MYSQL_PASSWORD=${mysqlpass} \
-  --network ekasample \
-  --name=metricbeat \
-  --user=root \
-  --volume="$(pwd)/monitor-apm-alert/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:ro" \
-  --volume="/var/run/docker.sock:/var/run/docker.sock:ro" \
-  --volume="/sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro" \
-  --volume="/proc:/hostfs/proc:ro" \
-  --volume="/:/hostfs:ro" \
-  docker.elastic.co/beats/metricbeat:7.4.2 metricbeat -e \
-  -E output.elasticsearch.hosts=elasticsearch:9200
 ```
 
 服务较多，整体启动需要花个几分钟
@@ -44,8 +29,9 @@ docker run -d -e MYSQL_PASSWORD=${mysqlpass} \
   2.  启动了sample-service1,sample-service2 2个api服务
   3.  启动了mysql服务
   4.  启动了heartbeat服务监控sample-service1,sample-service2是否在线
-  5.  在elasticsearch和kibana上做了heartbeat的初始化
-  6.  在elasticsearch和kibana上做了metricbeat的初始化
+  5.  启动了metricbeat服务监控mysql
+  6.  在elasticsearch和kibana上做了heartbeat的初始化
+  7.  在elasticsearch和kibana上做了metricbeat的初始化
 
 ## log服务
   1.  打开kibana http://localhost:5601
