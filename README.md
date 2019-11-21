@@ -80,7 +80,8 @@ docker logs -f initjob
     --link elasticsearch:elasticsearch \
     --link kibana:kibana\
     --link apmserver:apmserver \
-    elastalert-create-index
+    -v $(pwd)/alert:/usr/src \
+    elastalert elastalert-create-index
   ```
 
   启动报警服务(根目录下执行)
