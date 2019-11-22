@@ -1,7 +1,9 @@
 # 监控报警服务
 
 ##  说明
-使用elastic search，kibana来构建集中日志管理，apm-server实现应用程序监控，使用elastalert报警。生产环境建议使用cloud vendor的es和kibana服务
+1.  使用elastic search，kibana来构建集中日志管理，apm-server实现应用程序监控，使用elastalert报警。
+2.  这个例子只是为了demo以下整套工具能做什么，以及一些sample，不能用于生产环境
+3.  生产环境建议使用cloud vendor的es和kibana服务
 
 ##  前提
 1.  Docker环境
