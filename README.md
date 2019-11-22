@@ -10,11 +10,15 @@
 4.  安装好curl
 
 ##  启动服务
+
 ### 启动方法
 ```SHELL
 git clone https://github.com/k19810703/eka.git
 # 创建网络 仅需一次
 docker network create ekasample
+#修改配置文件./alert/example_frequency.yaml
+#1.  48行 改为可用的smtp服务器地址
+#2.  57行 改为可用的email地址
 cd ./eka
 # 打包启动
 docker-compose up --build -d
@@ -32,6 +36,7 @@ docker logs -f initjob
   5.  启动了metricbeat服务监控mysql
   6.  在elasticsearch和kibana上做了heartbeat的初始化
   7.  在elasticsearch和kibana上做了metricbeat的初始化
+  8.  在elasticsearch上做了elastalert的初始化,并启动监控
 
 ## log服务
   1.  打开kibana http://localhost:5601
@@ -63,44 +68,13 @@ docker logs -f initjob
   [elasalert](https://elastalert.readthedocs.io/en/latest/running_elastalert.html)
 
   ### 启动报警服务
-  修改配置文件./alert/example_frequency.yaml
-  1.  48行 改为可用的smtp服务器地址
-  2.  57行 改为可用的email地址
-
-  build报警服务image(由于我本机的python是３.7版本，跟这个工具不兼容，使用docker创建python ３.6.4环境)
-  ```SHELL
-  cd alert
-  docker build -t elastalert .
-  ```
-
-  配置es的index
-  ```SHELL
-  docker run -it --rm \
-    --network ekasample \
-    --link elasticsearch:elasticsearch \
-    --link kibana:kibana\
-    --link apmserver:apmserver \
-    -v $(pwd)/alert:/usr/src \
-    elastalert elastalert-create-index
-  ```
-
-  启动报警服务(根目录下执行)
-  ```SHELL
-  docker run -it --rm \
-    --network ekasample \
-    --link elasticsearch:elasticsearch \
-    --link kibana:kibana\
-    --link apmserver:apmserver \
-    -v $(pwd)/alert:/usr/src \
-    elastalert python -m elastalert.elastalert --verbose --config config.yaml --rule example_frequency.yaml 
-  ```
-
-  测试报警功能， 停掉sample应用程序，过一会你会收到邮件警报，email以外也能配置slack报警
+  由于各个服务启动有先后顺序，所以elasticsearch应该已经会有服务不在线的记录并被监控程序捕获并发出邮件通知
+  注：监控程序需要python3.6环境，3.7+并不能正常运行
 
 ##  清理
   ```SHELL
   docker-compose rm -s -f -v
   ```
 
-### 答疑解惑
+## 答疑解惑
 wuhd@cn.ibm.com

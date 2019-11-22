@@ -129,6 +129,19 @@ services:
       - kibana
     networks:
       - ekasample
+  elastalert:
+    image: elastalert
+    build: ./alert
+    container_name: elastalert
+    restart: on-failure
+    volumes:
+      - ./alert:/usr/src
+    # command: "elastalert-create-index"
+    depends_on:
+      - kibana
+      - elasticsearch
+    networks:
+      - ekasample
 networks:
     ekasample:
       external: true
