@@ -68,8 +68,8 @@ docker logs -f initjob
   [elasalert](https://elastalert.readthedocs.io/en/latest/running_elastalert.html)
 
   ### 说明
-  由于各个服务启动有先后顺序，所以elasticsearch应该已经会有服务不在线的记录并被监控程序捕获并发出邮件通知
-  注：监控程序需要python3.6环境，3.7+并不能正常运行
+  1.  由于各个服务启动有先后顺序，所以elasticsearch应该已经会有服务不在线的记录并被监控程序捕获并发出邮件通知
+  2.  监控程序需要python3.6环境，3.7+不能正常运行
 
 ##  清理
   ```SHELL
