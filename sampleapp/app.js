@@ -1,7 +1,7 @@
-// require('elastic-apm-node').start({
-//   serviceName: process.env.appname,
-//   serverUrl: process.env.apmhost,
-// });
+require('elastic-apm-node').start({
+  serviceName: process.env.appname,
+  serverUrl: process.env.apmhost,
+});
 
 const axios = require('axios');
 const express = require('express');
@@ -16,8 +16,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/healthcheck', (req, res, next) => {
-  console.log(req.ip);
-  // log.info('get a request', { a: 'test' });
+  // console.log(req.ip);
+  log.info('get a request', { a: 'test' });
   res.json({
     status: 'ok',
   });
