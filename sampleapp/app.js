@@ -5,7 +5,7 @@ require('elastic-apm-node').start({
 
 const axios = require('axios');
 const express = require('express');
-// const { log } = require('./log');
+const { log } = require('./log');
 
 const app = express();
 
@@ -24,7 +24,7 @@ app.use('/healthcheck', (req, res, next) => {
 });
 
 app.use('/apmtest', (req, res, next) => {
-  // log.info('apmtest log');
+  log.info('apmtest log');
   axios.get(`${process.env.backendurl}/backend`)
     .then(response => res.json({
       data: process.env.appname,
@@ -33,12 +33,12 @@ app.use('/apmtest', (req, res, next) => {
 });
 
 app.use('/backend', (req, res, next) => {
-  // log.info('backend log');
+  log.info('backend log');
   res.json({response: 'from backend'});
 });
 
 app.use('/errortest', (req, res, next) => {
-  // log.error('ops, it is an error');
+  log.error('ops, it is an error');
   res.status(500).send();
   throw new Error('it is an error');
 });
